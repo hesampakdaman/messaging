@@ -120,6 +120,11 @@ curl -sS -X POST \
   -d '{"payload": {"event":"order_picked","order_id":1001}}'
 ```
 
+To inspect the database go to the container:
+```bash
+docker exec -it messaging_db psql -U messaging
+```
+
 Tear down using:
 ```bash
 make down

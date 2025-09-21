@@ -13,8 +13,7 @@ test:
 	uv run pytest -n auto
 
 lint:
-	uv run ruff format .
-	uv run ruff check . --fix
+	uv run ruff check .
 
 fmt:
 	uv run ruff format .
