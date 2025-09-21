@@ -1,0 +1,64 @@
+[project]
+name = "messaging"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+authors = [
+    { name = "Hesam Pakdaman", email = "hesam.pakdaman@gmail.com" }
+]
+requires-python = ">=3.13"
+dependencies = [
+    "asyncpg>=0.30.0",
+    "fastapi>=0.116.2",
+    "pydantic>=2.11.9",
+    "uvicorn>=0.35.0",
+]
+
+[project.scripts]
+messaging = "messaging:main"
+
+[build-system]
+requires = ["uv_build>=0.8.17,<0.9.0"]
+build-backend = "uv_build"
+
+[dependency-groups]
+dev = [
+    "asyncpg-stubs>=0.30.2",
+    "httpx>=0.28.1",
+    "pytest>=8.4.2",
+    "pytest-asyncio>=1.2.0",
+    "pytest-xdist>=3.8.0",
+    "ruff>=0.13.0",
+    "testcontainers>=4.13.0",
+]
+
+[tool.pyright]
+root = "src"
+
+[[tool.pyright.executionEnvironments]]
+  root = "src/tests"
+  reportAny = false
+  reportMissingParameterType = false
+  reportPrivateUsage = false
+  reportUnknownParameterType = false
+
+[tool.pytest.ini_options]
+filterwarnings = [
+    "ignore:.*@wait_container_is_ready.*:DeprecationWarning",
+]
+testpaths = ["src/tests"]
+addopts = "-p tests.plugin.pg_controller"
+
+
+[tool.ruff]
+line-length = 120
+
+[tool.ruff.lint]
+select = ["ARG", "B", "E", "F", "I"]
+
+[tool.ruff.lint.isort]
+force-sort-within-sections = true
+
+[tool.ruff.lint.per-file-ignores]
+"src/messaging/adapters/http/handlers.py" = ["B008"]
+"src/messaging/adapters/http/utils.py" = ["B008"]
