@@ -15,13 +15,27 @@ class Postgres:
 
     async def add(self, msg: models.Message) -> models.MessageID:
         query = """
-        INSERT INTO messages (id, channel, payload, published_at)
-        VALUES ($1::uuid, $2::text, $3::jsonb, $4::timestamptz)
+        WITH next AS (
+          INSERT INTO channel_sequences (channel, last_seq)
+          VALUES ($1, 1)
+          ON CONFLICT (channel)
+          DO UPDATE SET last_seq = channel_sequences.last_seq + 1
+          RETURNING last_seq
+        )
+        INSERT INTO messages (id, seq, channel, payload, published_at)
+        SELECT $2::uuid, next.last_seq, $1::text, $3::jsonb, COALESCE($4, now())
+        FROM next
         RETURNING id
         """
         return cast(
             models.MessageID,
-            await self._conn.fetchval(query, msg.id, str(msg.channel), json.dumps(msg.payload), msg.published_at),
+            await self._conn.fetchval(
+                query,
+                msg.channel,
+                msg.id,
+                json.dumps(msg.payload),
+                msg.published_at,
+            ),
         )
 
     async def list_unread(self, channel: models.Channel, consumer: models.Consumer) -> list[models.Message]:

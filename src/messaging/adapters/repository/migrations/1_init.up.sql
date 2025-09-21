@@ -15,3 +15,8 @@ CREATE TABLE IF NOT EXISTS message_reads (
     read_at TIMESTAMPTZ NOT NULL DEFAULT now(),
     PRIMARY KEY (message_id, consumer)
 );
+
+CREATE TABLE channel_sequences (
+  channel  TEXT PRIMARY KEY,
+  last_seq BIGINT NOT NULL
+);
