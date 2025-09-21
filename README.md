@@ -88,6 +88,15 @@ curl -sS \
 }
 ```
 
+## Ack message
+Mark a message as read for a given consumer. Returns 204 No Content on success.
+
+```bash
+curl -sS -X POST \
+  "http://localhost:8000/messages/080dd1a0-b044-4f8b-8aad-4d7c66dd68d0/ack" \
+  -H 'X-Consumer: reporting-service'
+```
+
 ## Development
 
 ### One-time setup
@@ -111,8 +120,8 @@ Start a local dev environment:
 ```bash
 make up
 ```
-This will start a Postgres instance, run the migrations, and start the HTTP server (Uvicorn) with reload. Then you can use cURL or your favorite HTTP client to hit the endpoints.
 
+This will start a Postgres instance, run the migrations, and start the HTTP server (Uvicorn) with reload. Then you can use cURL or your favorite HTTP client to hit the endpoints. For example:
 ```bash
 curl -sS -X POST \
   http://localhost:8000/channels/orders/publish \
