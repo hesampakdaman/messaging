@@ -68,7 +68,7 @@ curl -sS \
 
 ```bash
 curl -sS \
-  'http://localhost:8000/channels/orders/messages/from/1'
+  'http://localhost:8000/channels/orders/messages/from/0'
 ```
 
 **Example response**

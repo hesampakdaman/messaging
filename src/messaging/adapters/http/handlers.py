@@ -56,7 +56,7 @@ async def get_unread_messages(
 )
 async def get_messages_from_sequence(
     channel: models.Channel = Path(..., min_length=1),
-    from_seq: int = Path(..., ge=1),
+    from_seq: int = Path(..., ge=0),
     svc: Service = Depends(utils.get_service),
 ):
     cmd = commands.ListFromSequence(channel, from_seq)

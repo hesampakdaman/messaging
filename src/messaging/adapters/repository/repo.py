@@ -17,7 +17,7 @@ class Postgres:
         query = """
         WITH next AS (
           INSERT INTO channel_sequences (channel, last_seq)
-          VALUES ($2, 1)
+          VALUES ($2, 0)
           ON CONFLICT (channel)
           DO UPDATE SET last_seq = channel_sequences.last_seq + 1
           RETURNING last_seq
