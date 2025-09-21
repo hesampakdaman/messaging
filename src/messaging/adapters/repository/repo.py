@@ -17,13 +17,13 @@ class Postgres:
         query = """
         WITH next AS (
           INSERT INTO channel_sequences (channel, last_seq)
-          VALUES ($1, 1)
+          VALUES ($2, 1)
           ON CONFLICT (channel)
           DO UPDATE SET last_seq = channel_sequences.last_seq + 1
           RETURNING last_seq
         )
         INSERT INTO messages (id, seq, channel, payload, published_at)
-        SELECT $2::uuid, next.last_seq, $1::text, $3::jsonb, COALESCE($4, now())
+        SELECT $1::uuid, next.last_seq, $2::text, $3::jsonb, $4::timestamptz
         FROM next
         RETURNING id
         """
@@ -31,8 +31,8 @@ class Postgres:
             models.MessageID,
             await self._conn.fetchval(
                 query,
-                msg.channel,
                 msg.id,
+                msg.channel,
                 json.dumps(msg.payload),
                 msg.published_at,
             ),
