@@ -130,10 +130,16 @@ Tear down using:
 make down
 ```
 
+and if you want to tear down and also delete the volume
+```bash
+make fresh
+```
+
 ## Helpful targets
 ```bash
 make up        # docker compose up
 make down      # docker compose down
+make fresh     # docker compose down -v (delete volume)
 make run       # run API normally
 make test      # pytest -n auto (isolated, with testcontainers)
 make fmt       # ruff format

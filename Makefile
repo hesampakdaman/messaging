@@ -1,4 +1,4 @@
-.PHONY: install run dev test lint fmt fmt-check clean lock up down docker-build docker-run docker-shell
+.PHONY: install run dev test lint fmt fmt-check clean lock up down fresh docker-build docker-run docker-shell
 
 install:
 	uv sync --dev
@@ -31,6 +31,9 @@ up:
 
 down:
 	docker compose down
+
+fresh:
+	docker compose down -v
 
 docker-build:
 	docker build -t messaging:local .
