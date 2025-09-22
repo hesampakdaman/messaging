@@ -5,8 +5,8 @@ import os
 import asyncpg
 from fastapi import FastAPI
 
-from messaging.adapters.http.handlers import app
 from messaging.adapters import repository
+from messaging.adapters.http.handlers import app
 from messaging.service.service import Service
 
 

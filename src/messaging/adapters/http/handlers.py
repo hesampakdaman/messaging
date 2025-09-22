@@ -4,8 +4,8 @@ import uuid
 from fastapi import Body, Depends, FastAPI, Path, status
 
 from messaging.domain import models
-from messaging.service.service import Service
 from messaging.service import commands
+from messaging.service.service import Service
 
 from . import schema, utils
 
