@@ -5,9 +5,9 @@ import os
 import asyncpg
 from fastapi import FastAPI
 
-from messaging import adapters
+from messaging.adapters.http.handlers import app
 from messaging.adapters import repository
-from messaging.service import Service
+from messaging.service.service import Service
 
 
 async def create_postgres() -> repository.PostgresManager:
@@ -31,5 +31,4 @@ async def lifespan(app: FastAPI):
 
 
 logging.basicConfig(level=logging.INFO)
-app: FastAPI = adapters.http.app
 app.router.lifespan_context = lifespan

@@ -2,7 +2,7 @@
 from fastapi import Header, HTTPException, Request
 
 from messaging.domain import models
-from messaging.service import Service
+from messaging.service.service import Service
 
 
 async def require_consumer(

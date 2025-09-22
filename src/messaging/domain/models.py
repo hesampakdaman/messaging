@@ -6,7 +6,7 @@ from uuid import UUID
 JSON: TypeAlias = dict[str, Any]
 Channel = NewType("Channel", str)
 Consumer = NewType("Consumer", str)
-MessageID = NewType("MessageID", UUID)  # use if you want to forbid plain UUIDs here
+MessageID = NewType("MessageID", UUID)
 
 
 @dataclass
