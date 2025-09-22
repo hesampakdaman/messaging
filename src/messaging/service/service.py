@@ -20,6 +20,7 @@ class Service:
         log.info("publish.start")
         async with self.pg.transaction() as tx:
             new_id = await tx.add(cmd.message)
+            await tx.commit()
         log.info("publish.ok", extra={"new_id": new_id})
         return new_id
 
@@ -44,4 +45,5 @@ class Service:
         log.debug("ack.start")
         async with self.pg.transaction() as tx:
             await tx.mark_read(cmd.id, cmd.consumer, cmd.read_at)
+            await tx.commit()
         log.debug("ack.ok")

@@ -4,14 +4,20 @@ from datetime import datetime
 import json
 from typing import cast
 
-import asyncpg
+from asyncpg import Pool, Record
+from asyncpg.pool import PoolConnectionProxy
+from asyncpg.transaction import Transaction
 
 from messaging.domain import models
 
 
 class Postgres:
-    def __init__(self, conn: asyncpg.pool.PoolConnectionProxy):
-        self._conn: asyncpg.pool.PoolConnectionProxy = conn
+    def __init__(self, conn: PoolConnectionProxy, tx: Transaction):
+        self._conn: PoolConnectionProxy = conn
+        self._tx: Transaction = tx
+
+    async def commit(self) -> None:
+        await self._tx.commit()
 
     async def add(self, msg: models.Message) -> models.MessageID:
         query = """
@@ -48,7 +54,7 @@ class Postgres:
           AND m.channel = $1
         ORDER BY m.seq ASC
         """
-        rows: list[asyncpg.Record] = await self._conn.fetch(query, channel, consumer)
+        rows: list[Record] = await self._conn.fetch(query, channel, consumer)
         return list(map(_to_message, rows))
 
     async def list_from_sequence(self, channel: models.Channel, from_sequence: int) -> list[models.Message]:
@@ -59,7 +65,7 @@ class Postgres:
           AND m.seq >= $2
         ORDER BY m.seq ASC
         """
-        rows: list[asyncpg.Record] = await self._conn.fetch(query, channel, from_sequence)
+        rows: list[Record] = await self._conn.fetch(query, channel, from_sequence)
         return list(map(_to_message, rows))
 
     async def mark_read(
@@ -78,19 +84,27 @@ class Postgres:
 
 
 class PostgresManager:
-    def __init__(self, pool: asyncpg.Pool):
-        self._pool: asyncpg.Pool = pool
+    def __init__(self, pool: Pool):
+        self._pool: Pool = pool
 
     @asynccontextmanager
     async def transaction(self) -> AsyncIterator[Postgres]:
-        async with self._pool.acquire() as conn, conn.transaction():
-            yield Postgres(conn)
+        async with self._pool.acquire() as conn:
+            tx = conn.transaction()
+            await tx.start()
+            try:
+                yield Postgres(conn, tx)
+            finally:
+                try:
+                    await tx.rollback()
+                except Exception:
+                    pass
 
     async def close(self) -> None:
         await self._pool.close()
 
 
-def _to_message(r: asyncpg.Record) -> models.Message:
+def _to_message(r: Record) -> models.Message:
     return models.Message(
         id=cast(models.MessageID, r["id"]),
         channel=cast(models.Channel, r["channel"]),
