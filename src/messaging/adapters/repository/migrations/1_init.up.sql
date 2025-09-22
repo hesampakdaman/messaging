@@ -16,7 +16,7 @@ CREATE TABLE IF NOT EXISTS message_reads (
     PRIMARY KEY (message_id, consumer)
 );
 
-CREATE TABLE channel_sequences (
+CREATE TABLE IF NOT EXISTS channel_sequences (
   channel  TEXT PRIMARY KEY,
   last_seq BIGINT NOT NULL
 );
